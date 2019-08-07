@@ -1,0 +1,55 @@
+plugins {
+    id 'org.springframework.boot' version '2.1.7.RELEASE'
+    id 'java'
+    id "com.google.protobuf" version "0.8.10"
+}
+
+apply plugin: 'io.spring.dependency-management'
+apply plugin: "com.google.protobuf"
+
+group = 'com.pb'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.google.protobuf:protobuf-java:3.9.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDir 'src/main/proto'
+        }
+        java {
+            // include self written and generated code
+            srcDirs 'src/main/java', 'generated-sources/main/java'
+        }
+    }
+    // remove the test configuration - at least in your example you don't have a special test proto file
+}
+
+
+protobuf {
+    // Configure the protoc executable
+    protoc {
+        // Download from repositories
+        artifact = 'com.google.protobuf:protoc:3.0.0'
+    }
+    generateProtoTasks.generatedFilesBaseDir = 'generated-sources'
+    generateProtoTasks {
+        // all() returns the collection of all protoc tasks
+        all().each { task ->
+            task.builtins {
+                java { }
+                cpp { }
+                js { }
+            }
+        }
+    }
+}
